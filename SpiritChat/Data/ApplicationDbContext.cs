@@ -17,9 +17,10 @@ namespace SpiritChat.Data
         {
             base.OnModelCreating(builder);
             builder.Entity<Message>()
-                .HasOne<User>(e => e.User)
+                .HasOne<User>(e => e.Sender)
                 .WithMany(d => d.Messages)
-                .HasForeignKey(d => d.User.Id);
+                .HasForeignKey(d => d.UserId);
         }
+        public DbSet<Message> Messages { get; set; }
     }
 }

@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SpiritChat.Data;
 using SpiritChat.Models;
 using System;
 using System.Collections.Generic;
@@ -12,15 +15,37 @@ namespace SpiritChat.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        public readonly UserManager<User> _userManager;
+        public readonly ApplicationDbContext _context;
+        public HomeController(ILogger<HomeController> logger, UserManager<User> userManager, ApplicationDbContext context)
         {
             _logger = logger;
+            _userManager = userManager;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+            ViewBag.CurrentUserName = currentUser.UserName;
+            var messages = await _context.Messages.ToListAsync();
             return View();
+        }
+
+
+        public async Task<IActionResult> Create(Message message)
+        {
+            if (ModelState.IsValid)
+            {
+                message.Username = User.Identity.Name;
+                var sender = await _userManager.GetUserAsync(User);
+                message.UserId = sender.Id;
+                await _context.Messages.AddAsync(message);
+                await _context.SaveChangesAsync();
+                return Ok();
+
+            }
+            return Error();
         }
 
         public IActionResult Privacy()

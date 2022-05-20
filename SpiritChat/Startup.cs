@@ -12,6 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using SpiritChat.Hubs;
 
 namespace SpiritChat
 {
@@ -31,7 +33,7 @@ namespace SpiritChat
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
-
+            services.AddSignalR();
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
@@ -58,6 +60,10 @@ namespace SpiritChat
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseEndpoints(route =>
+            {
+                route.MapHub<ChatHub>("/Home/Index");
+            });
 
             app.UseEndpoints(endpoints =>
             {

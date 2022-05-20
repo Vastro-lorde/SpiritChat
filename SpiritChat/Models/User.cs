@@ -10,5 +10,6 @@ namespace SpiritChat.Models
             Messages = new List<Message>();
         }
         public virtual ICollection<Message> Messages { get; set; }
+        public string FullName { get; set; }
     }
 }
