@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace SpiritChat.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -29,7 +31,7 @@ namespace SpiritChat.Controllers
             var currentUser = await _userManager.GetUserAsync(User);
             ViewBag.CurrentUserName = currentUser.UserName;
             var messages = await _context.Messages.ToListAsync();
-            return View();
+            return View(messages);
         }
 
 
